@@ -5,7 +5,7 @@ using System.IO.Ports;
 
 public class SerialEulerA : MonoBehaviour {
 
-	SerialPort stream = new SerialPort("COM3", 115200);
+	SerialPort stream = new SerialPort("COM7", 115200);
 	//SerialPort stream = new SerialPort("\\\\.\\COM18", 115200, Parity.None, 8, StopBits.One);  // My Bluetooth COM port
 	public Quaternion direction;
 	private AudioSource[] sounds;
@@ -24,9 +24,9 @@ public class SerialEulerA : MonoBehaviour {
 	
 	void Update () {
 		if (stick.carryingBranch) {
-			walkSpeed = 3.0f;
-		} else {
 			walkSpeed = 6.0f;
+		} else {
+			walkSpeed = 12.0f;
 		}
 		try{
 			stream.Open();
@@ -36,6 +36,18 @@ public class SerialEulerA : MonoBehaviour {
 			if (strEul.Length > 5) {
 				direction = Quaternion.Euler (new Vector3( -float.Parse(strEul[5]), float.Parse (strEul[3]), float.Parse(strEul[4])));
 				this.transform.rotation = direction;
+				if (Input.GetKey(KeyCode.W)) {
+					this.GetComponent<CharacterController>().SimpleMove(this.transform.forward * walkSpeed);
+				}
+				if (Input.GetKey(KeyCode.S)) {
+					this.GetComponent<CharacterController>().SimpleMove(this.transform.forward * -walkSpeed);
+				}
+				if (Input.GetKey(KeyCode.D)) {
+					this.GetComponent<CharacterController>().SimpleMove(this.transform.right * walkSpeed);
+				}
+				if (Input.GetKey(KeyCode.A)) {
+					this.GetComponent<CharacterController>().SimpleMove(this.transform.right * -walkSpeed);
+				}
 				if (int.Parse(strEul[2]) == 1) {
 					//this.GetComponent<Rigidbody>().AddForce(this.transform.forward * 30f);
 					this.GetComponent<CharacterController>().SimpleMove(this.transform.forward * walkSpeed);
